@@ -5,14 +5,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const employeesRoutes = require('./api/routes/employees');
-const companiesRoutes = require('./api/routes/companies');
+const departmentRoutes = require('./api/routes/departments');
 
 mongoose.connect("mongodb+srv://mhabigier:zFT04o2Mk@node-company-management-um4sr.mongodb.net/test?retryWrites=true",
     (err) => {
         if(err){
             console.log("Could not connect to MongoDB");
         } else{
-    console.log("Succesfully connected to DB")
+    console.log("Successfully connected to DB")
 }
 });
 
@@ -31,7 +31,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/employees', employeesRoutes);
-app.use('/companies', companiesRoutes);
+app.use('/departments', departmentRoutes);
+
 
 app.use((req, res, next) => {
     const error = new Error('Not found');

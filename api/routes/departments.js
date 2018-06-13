@@ -2,20 +2,19 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const Employee = require('../models/employee');
+const Department = require('../models/department');
 
 router.get("/", (req, res, next) => {
-    Employee.find()
-        .select("name salary address")
+    Department.find()
+        .select("departmentName employees _id")
         .exec()
         .then(docs => {
             const response = {
-                employees: docs.map(doc => {
+                departments: docs.map(doc => {
                     return {
-                        name: doc.name,
-                        salary: doc.salary,
-                        address: doc.address,
-                        _id: doc._id,
+                        departmentName: doc.departmentName,
+                        employees: doc.employees,
+                        _id: doc._id
                     }
                 })
             };
@@ -30,23 +29,21 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-    const employee = new Employee({
+    const department = new Department({
         _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        address: req.body.address,
-        salary: req.body.salary
+        departmentName: req.body.departmentName,
+        employees: []
     });
-    employee
+    department
         .save()
         .then(result => {
             console.log(result);
             res.status(201).json({
-                message: "Employee created successfully",
-                createdEmployee: {
+                message: "Department created successfully",
+                createdDepartment: {
                     _id: result._id,
-                    name: result.name,
-                    address: result.address,
-                    salary: result.salary
+                    departmentName: result.departmentName,
+                    employees: result.employees
                 }
             });
         })
@@ -58,35 +55,36 @@ router.post("/", (req, res, next) => {
         });
 });
 
-router.get('/:employeeId', (req, res, next) =>{
-   const id = req.params.employeeId;
-   Employee.findById(id)
-       .select('name salary address _id')
-       .exec()
-       .then(doc => {
-           console.log("From db", doc);
-           if(doc){
-               res.status(200).json(doc);
-           } else{
-               res.status(404)
-                   .json({message: "Employee with this ID doesn't exist!"});
-           }
-       })
-       .catch(err => {
-           console.log(err);
-           res.status(500).json({
-               error: err
-           });
-       });
+
+router.get('/:departmentId', (req, res, next) =>{
+    const id = req.params.departmentId;
+    Department.findById(id)
+        .select('departmentName employees _id')
+        .exec()
+        .then(doc => {
+            console.log("From db", doc);
+            if(doc){
+                res.status(200).json(doc);
+            } else{
+                res.status(404)
+                    .json({message: "Employee with this ID doesn't exist!"});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
 });
 
-router.patch("/:employeeId", (req, res, next) => {
-    const id = req.params.employeeId;
+router.patch("/:departmentId", (req, res, next) => {
+    const id = req.params.departmentId;
     const updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    Employee.update({ _id: id }, { $set: updateOps })
+    Department.update({ _id: id }, { $set: updateOps })
         .exec()
         .then(result => {
             console.log(result);
@@ -100,9 +98,9 @@ router.patch("/:employeeId", (req, res, next) => {
         });
 });
 
-router.delete("/:employeeId", (req, res, next) => {
-    const id = req.params.employeeId;
-    Employee.findOneAndRemove({ _id: id })
+router.delete("/:departmentId", (req, res, next) => {
+    const id = req.params.departmentId;
+    Department.findOneAndRemove({ _id: id })
         .exec()
         .then(result => {
             res.status(200).json(result);
