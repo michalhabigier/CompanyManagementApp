@@ -4,8 +4,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const employeesRoutes = require('./api/routes/employees');
-const departmentRoutes = require('./api/routes/departments');
+const employeesRoutes = require('./api/controllers/employees');
+const departmentRoutes = require('./api/controllers/departments');
 
 mongoose.connect("mongodb+srv://mhabigier:zFT04o2Mk@node-company-management-um4sr.mongodb.net/test?retryWrites=true",
     (err) => {
